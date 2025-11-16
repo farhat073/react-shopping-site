@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
+import { Helmet } from 'react-helmet';
 import { ShoppingBag, CheckCircle2 } from 'lucide-react';
 import { useCart } from '../hooks/useCart';
 import { CartItem } from '../components/cart/CartItem';

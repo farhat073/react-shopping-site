@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Helmet } from 'react-helmet-async';
+import { Helmet } from 'react-helmet';
 import { useAuth } from '../context/AuthContext';
 import { fetchOrdersByUser } from '../api/orders';
 import { formatPrice } from '../utils/helpers';

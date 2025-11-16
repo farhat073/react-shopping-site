@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
-import { Helmet } from 'react-helmet-async';
+import { Helmet } from 'react-helmet';
 import { CreditCard, Wallet, Building2, Info, Loader2, ShoppingBag } from 'lucide-react';
 import { useCart } from '../hooks/useCart';
 import { useAuth } from '../context/AuthContext';

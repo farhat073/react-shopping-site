@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
-import { HelmetProvider, Helmet } from 'react-helmet-async';
+import HelmetProvider from 'react-helmet';
+import { Helmet } from 'react-helmet';
 import { Toaster } from 'react-hot-toast';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { Layout } from './components/layout/Layout';
