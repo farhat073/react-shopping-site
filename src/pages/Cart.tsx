@@ -18,9 +18,9 @@ export const Cart = () => {
     return (
       <>
         <Helmet>
-          <title>Shopping Cart - Our Store</title>
+          <title>Shopping Cart - Wear Inn</title>
           <meta name="description" content="Your shopping cart is empty. Browse our products and add items to your cart to get started." />
-          <meta property="og:title" content="Shopping Cart - Our Store" />
+          <meta property="og:title" content="Shopping Cart - Wear Inn" />
           <meta property="og:description" content="Your shopping cart is empty. Browse our products and add items to your cart." />
           <meta property="og:type" content="website" />
           <link rel="canonical" href="/cart" />
@@ -65,9 +65,9 @@ export const Cart = () => {
   return (
     <>
       <Helmet>
-        <title>{`Shopping Cart (${itemCount || 0} items) - Our Store`}</title>
-        <meta name="description" content={`Review your shopping cart with ${itemCount || 0} items. Complete your purchase at Our Store.`} />
-        <meta property="og:title" content={`Shopping Cart (${itemCount || 0} items) - Our Store`} />
+        <title>{`Shopping Cart (${itemCount || 0} items) - Wear Inn`}</title>
+        <meta name="description" content={`Review your shopping cart with ${itemCount || 0} items. Complete your purchase at Wear Inn.`} />
+        <meta property="og:title" content={`Shopping Cart (${itemCount || 0} items) - Wear Inn`} />
         <meta property="og:description" content={`Review your shopping cart with ${itemCount || 0} items. Complete your purchase.`} />
         <meta property="og:type" content="website" />
         <link rel="canonical" href="/cart" />

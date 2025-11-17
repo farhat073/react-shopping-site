@@ -28,7 +28,7 @@ function App() {
     <ErrorBoundary>
       <HelmetProvider>
         <Helmet>
-          <title>Our Store</title>
+          <title>Wear Inn</title>
           <meta name="description" content="Quality products at great prices" />
         </Helmet>
         <AuthProvider>

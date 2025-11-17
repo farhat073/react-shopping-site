@@ -90,7 +90,7 @@ const Checkout = () => {
   return (
     <>
       <Helmet>
-        <title>Checkout - Our Store</title>
+        <title>Checkout - Wear Inn</title>
         <meta name="description" content="Complete your purchase and review your order details." />
       </Helmet>
 

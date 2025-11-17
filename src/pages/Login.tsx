@@ -33,7 +33,7 @@ export const Login = () => {
   return (
     <>
       <Helmet>
-        <title>Login - Our Store</title>
+        <title>Login - Wear Inn</title>
         <meta name="description" content="Login to your account to access your shopping cart and order history." />
       </Helmet>
 

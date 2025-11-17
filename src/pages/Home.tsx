@@ -323,9 +323,9 @@ export const Home = () => {
   return (
     <>
       <Helmet>
-        <title>Welcome to Our Store - Quality Products at Great Prices</title>
+        <title>Welcome to Wear Inn - Quality Products at Great Prices</title>
         <meta name="description" content="Discover amazing products at great prices. Quality and style that you'll love. Shop our curated collection of premium products." />
-        <meta property="og:title" content="Welcome to Our Store - Quality Products at Great Prices" />
+        <meta property="og:title" content="Welcome to Wear Inn - Quality Products at Great Prices" />
         <meta property="og:description" content="Discover amazing products at great prices. Quality and style that you'll love." />
         <meta property="og:image" content="/og-image-home.jpg" />
         <meta property="og:type" content="website" />

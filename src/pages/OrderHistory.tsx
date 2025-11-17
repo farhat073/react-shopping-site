@@ -79,7 +79,7 @@ const OrderHistory = () => {
   return (
     <>
       <Helmet>
-        <title>Order History - Our Store</title>
+        <title>Order History - Wear Inn</title>
         <meta name="description" content="View your order history and track your purchases." />
       </Helmet>
 

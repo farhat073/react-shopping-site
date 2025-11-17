@@ -1,5 +1,5 @@
 export const SITE_CONFIG = {
-  name: 'ShopName',
+  name: 'Wear Inn',
   description: 'Your stylish shopping destination',
   url: import.meta.env.VITE_SITE_URL,
 } as const;

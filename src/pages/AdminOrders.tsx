@@ -74,7 +74,7 @@ const AdminOrders = () => {
   return (
     <>
       <Helmet>
-        <title>Admin - Order Management - Our Store</title>
+        <title>Admin - Order Management - Wear Inn</title>
         <meta name="description" content="Manage orders and update their status." />
       </Helmet>
 

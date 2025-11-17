@@ -108,9 +108,9 @@ const ProductDetail = () => {
   return (
     <>
       <Helmet>
-        <title>{product.title} - Our Store</title>
+        <title>{product.title} - Wear Inn</title>
         <meta name="description" content={`${product.description.substring(0, 155)}...`} />
-        <meta property="og:title" content={`${product.title} - Our Store`} />
+        <meta property="og:title" content={`${product.title} - Wear Inn`} />
         <meta property="og:description" content={product.description} />
         <meta property="og:image" content={currentImage} />
         <meta property="og:type" content="product" />

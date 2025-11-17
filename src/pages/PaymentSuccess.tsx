@@ -10,7 +10,7 @@ const PaymentSuccess = () => {
   return (
     <>
       <Helmet>
-        <title>Payment Successful - Our Store</title>
+        <title>Payment Successful - Wear Inn</title>
         <meta name="description" content="Your payment has been processed successfully." />
       </Helmet>
 

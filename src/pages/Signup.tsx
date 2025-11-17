@@ -49,7 +49,7 @@ export const Signup = () => {
   return (
     <>
       <Helmet>
-        <title>Sign Up - Our Store</title>
+        <title>Sign Up - Wear Inn</title>
         <meta name="description" content="Create a new account to start shopping with us." />
       </Helmet>
 

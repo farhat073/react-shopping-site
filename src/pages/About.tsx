@@ -5,9 +5,9 @@ export const About = () => {
   return (
     <>
       <Helmet>
-        <title>About Us - Our Store</title>
-        <meta name="description" content="Learn about Our Store's mission, values, and commitment to providing high-quality products and exceptional shopping experiences." />
-        <meta property="og:title" content="About Us - Our Store" />
+        <title>About Us - Wear Inn</title>
+        <meta name="description" content="Learn about Wear Inn's mission, values, and commitment to providing high-quality products and exceptional shopping experiences." />
+        <meta property="og:title" content="About Us - Wear Inn" />
         <meta property="og:description" content="Learn about our mission, values, and commitment to quality products and customer satisfaction." />
         <meta property="og:type" content="website" />
         <link rel="canonical" href="/about" />
@@ -15,7 +15,7 @@ export const About = () => {
           {JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Organization",
-            "name": "Our Store",
+            "name": "Wear Inn",
             "description": "We're passionate about providing high-quality products and exceptional shopping experiences.",
             "url": window.location.origin,
             "logo": `${window.location.origin}/logo.png`

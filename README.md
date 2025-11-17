@@ -55,7 +55,7 @@ Edit `.env` with your Directus instance details:
 
 ```env
 VITE_DIRECTUS_URL=https://your-directus-instance.com
-VITE_SITE_TITLE=ShopName
+VITE_SITE_TITLE=Wear Inn
 VITE_SITE_DESCRIPTION=Your stylish shopping destination
 ```
 
