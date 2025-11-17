@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { ShoppingCart, Zap, Check, ArrowLeft } from 'lucide-react';
 import { useCart } from '../hooks/useCart';
 import { formatPrice } from '../utils/helpers';

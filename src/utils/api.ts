@@ -1,12 +1,6 @@
 import type { Product } from '../types';
 import type { DirectusFile } from '../types/product';
 
-const VITE_DIRECTUS_URL = import.meta.env.VITE_DIRECTUS_URL;
-
-if (!VITE_DIRECTUS_URL) {
-  console.warn('VITE_DIRECTUS_URL is not set. Using mock data.');
-}
-
 // TODO: Implement Directus SDK integration when API is available
 // import { createDirectus, rest, readItems, readItem } from '@directus/sdk';
 // const directus = VITE_DIRECTUS_URL ? createDirectus(VITE_DIRECTUS_URL).with(rest()) : null;

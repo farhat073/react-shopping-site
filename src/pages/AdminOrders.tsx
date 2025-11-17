@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { fetchAllOrders, updateOrderStatus } from '../api/orders';
 import { formatPrice } from '../utils/helpers';
 import { Badge } from '../components/common/Badge';

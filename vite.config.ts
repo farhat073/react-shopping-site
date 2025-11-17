@@ -9,30 +9,30 @@ export default defineConfig({
     devSourcemap: true,
   },
   // Proxy only in development - production uses environment variables directly
-  server: {
+  server: process.env.VITE_DIRECTUS_URL ? {
     proxy: {
       '/items': {
-        target: process.env.VITE_DIRECTUS_URL || 'http://localhost:8055',
+        target: process.env.VITE_DIRECTUS_URL,
         changeOrigin: true,
         secure: false,
       },
       '/assets': {
-        target: process.env.VITE_DIRECTUS_URL || 'http://localhost:8055',
+        target: process.env.VITE_DIRECTUS_URL,
         changeOrigin: true,
         secure: false,
       },
       '/auth': {
-        target: process.env.VITE_DIRECTUS_URL || 'http://localhost:8055',
+        target: process.env.VITE_DIRECTUS_URL,
         changeOrigin: true,
         secure: false,
       },
       '/users': {
-        target: process.env.VITE_DIRECTUS_URL || 'http://localhost:8055',
+        target: process.env.VITE_DIRECTUS_URL,
         changeOrigin: true,
         secure: false,
       },
     },
-  },
+  } : {},
   build: {
     outDir: 'dist',
     sourcemap: false,

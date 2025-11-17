@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence, useMotionValue, useSpring, useMotionValueEvent } from 'framer-motion';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { Link, useNavigate } from 'react-router-dom';
 import { Search, X, ArrowRight, Sparkles, ShoppingCart, Star, TrendingUp, Menu, User, LogOut, Package } from 'lucide-react';
 import { fetchProducts } from '../api/products';
