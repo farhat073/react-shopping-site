@@ -2,7 +2,6 @@ services:
   - type: web
     name: strapi-backend
     runtime: node
-    nodeVersion: "18"
     buildCommand: cd backend && npm install
     startCommand: cd backend && npm run start
     envVars:
