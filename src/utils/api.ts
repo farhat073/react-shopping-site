@@ -1,14 +1,12 @@
 import type { Product } from '../types';
-import type { DirectusFile } from '../types/product';
 
-// TODO: Implement Directus SDK integration when API is available
-// import { createDirectus, rest, readItems, readItem } from '@directus/sdk';
-// const directus = VITE_DIRECTUS_URL ? createDirectus(VITE_DIRECTUS_URL).with(rest()) : null;
+// TODO: Implement Strapi SDK integration when API is available
+// import { strapi } from './strapiClient'; // Placeholder for Strapi client
 
 export const fetchProducts = async (): Promise<Product[]> => {
   // For now, return mock data
-  // TODO: Replace with actual Directus API call
-  const mockImage: DirectusFile = {
+  // TODO: Replace with actual Strapi API call
+  const mockImage = {
     id: '1',
     filename_disk: 'placeholder.jpg',
     filename_download: 'placeholder.jpg',
@@ -48,8 +46,8 @@ export const fetchProducts = async (): Promise<Product[]> => {
 
 export const fetchProduct = async (id: string): Promise<Product> => {
   // For now, return mock data
-  // TODO: Replace with actual Directus API call
-  const mockImage: DirectusFile = {
+  // TODO: Replace with actual Strapi API call
+  const mockImage = {
     id: '1',
     filename_disk: 'placeholder.jpg',
     filename_download: 'placeholder.jpg',

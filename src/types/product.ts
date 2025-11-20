@@ -1,14 +1,3 @@
-export interface DirectusFile {
-  id: string;
-  filename_disk: string;
-  filename_download: string;
-  title?: string;
-  type: string;
-  filesize: number;
-  width?: number;
-  height?: number;
-}
-
 export interface Product {
   id: string;
   title: string;
@@ -19,7 +8,7 @@ export interface Product {
   currency: string;
   stock: number;
   published: boolean;
-  images?: DirectusFile[]; // Directus file objects
+  images?: any[]; // Strapi media objects - placeholder
   category?: {
     id: string;
     name: string;

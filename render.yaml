@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: strapi-backend
+    runtime: node
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && npm run start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false # Set this in Render dashboard or via external database
+      - key: JWT_SECRET
+        generateValue: true
+      - key: API_TOKEN_SALT
+        generateValue: true
+      - key: ADMIN_JWT_SECRET
+        generateValue: true
+      - key: APP_KEYS
+        generateValue: true
+    healthCheckPath: /_health
+    disk:
+      name: strapi-disk
+      mountPath: /opt/render/project/src/backend/.tmp
+      sizeGB: 1

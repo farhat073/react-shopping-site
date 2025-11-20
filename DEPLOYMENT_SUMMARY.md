@@ -21,7 +21,7 @@
   - `.DS_Store`
 
 ### 4. Environment Variables
-- ✅ All code now uses `import.meta.env.VITE_DIRECTUS_URL`
+- ✅ All code now uses `import.meta.env.VITE_STRAPI_URL`
 - ✅ Removed hardcoded `localhost:8055` from production code
 - ✅ Created `.env.example` file for reference
 - ✅ Updated `src/config.ts` to require environment variable in production
@@ -56,8 +56,8 @@
 You **must** configure these environment variables in Vercel's project settings:
 
 ### Required:
-- **`VITE_DIRECTUS_URL`**: Your production Directus instance URL
-  - Example: `https://your-directus-instance.com`
+- **`VITE_STRAPI_URL`**: Your production Strapi instance URL
+  - Example: `https://your-strapi-instance.com`
   - **This is required** - the app will fail in production without it
 
 ### Optional:
@@ -82,9 +82,9 @@ You **must** configure these environment variables in Vercel's project settings:
    - Vercel will auto-detect Vite configuration
 
 3. **Configure Environment Variables**:
-   - In Vercel project settings → Environment Variables
-   - Add `VITE_DIRECTUS_URL` with your production Directus URL
-   - Optionally add `VITE_SITE_URL`
+    - In Vercel project settings → Environment Variables
+    - Add `VITE_STRAPI_URL` with your production Strapi URL
+    - Optionally add `VITE_SITE_URL`
 
 4. **Deploy**:
    - Click "Deploy"
@@ -93,15 +93,12 @@ You **must** configure these environment variables in Vercel's project settings:
 ## ⚠️ Important Notes
 
 ### CORS Configuration
-- Your Directus instance must allow requests from your Vercel domain
-- Update Directus CORS settings to include your Vercel URL:
-  ```
-  CORS_ORIGIN=https://your-site.vercel.app
-  ```
+- Your Strapi instance must allow requests from your Vercel domain
+- Update Strapi CORS settings to include your Vercel URL
 
 ### Proxy Configuration
 - The Vite dev server proxy is **only for development**
-- In production, the app makes direct API calls to `VITE_DIRECTUS_URL`
+- In production, the app makes direct API calls to `VITE_STRAPI_URL`
 - No proxy is needed in production
 
 ### Build Warnings
@@ -122,7 +119,7 @@ You **must** configure these environment variables in Vercel's project settings:
    npm run preview
    ```
 
-2. **Set up Directus CORS** for your production domain
+2. **Set up Strapi CORS** for your production domain
 
 3. **Test API connectivity** from production environment
 

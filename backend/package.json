@@ -1,0 +1,26 @@
+{
+  "name": "backend",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Strapi backend for React shopping site",
+  "scripts": {
+    "build": "strapi build",
+    "develop": "strapi develop",
+    "start": "strapi start",
+    "strapi": "strapi"
+  },
+  "dependencies": {
+    "@strapi/strapi": "4.25.1",
+    "@strapi/plugin-users-permissions": "4.25.1",
+    "@strapi/plugin-i18n": "4.25.1",
+    "@strapi/provider-upload-local": "4.25.1",
+    "better-sqlite3": "8.6.0"
+  },
+  "engines": {
+    "node": ">=16.0.0 <=20.x.x",
+    "npm": ">=6.0.0"
+  },
+  "strapi": {
+    "uuid": "strapi-uuid"
+  }
+}

@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import { addCartItemToDirectus as apiAddToCart, getCartItemsFromDirectus as fetchUserCart } from '../api/cart';
+// TODO: Import Strapi cart functions
+// import { addCartItemToStrapi as apiAddToCart, getCartItemsFromStrapi as fetchUserCart } from '../api/cart';
 import type { CartItem, CartState } from '../types';
 
 interface CartStore extends CartState {
@@ -85,38 +86,39 @@ export const useCartStore = create<CartStore>()(
       },
 
       syncWithBackend: async (userId: string) => {
-        // Sync local cart to backend
-        const { items } = get();
-        for (const item of items) {
-          try {
-            await apiAddToCart(userId, item.product.id, item.quantity);
-          } catch (error) {
-            console.error('Error syncing cart item:', error);
-          }
-        }
+        // TODO: Sync local cart to Strapi backend
+        // const { items } = get();
+        // for (const item of items) {
+        //   try {
+        //     await apiAddToCart(userId, item.product.id, item.quantity);
+        //   } catch (error) {
+        //     console.error('Error syncing cart item:', error);
+        //   }
+        // }
       },
 
       loadFromBackend: async (userId: string) => {
-        try {
-          const backendItems = await fetchUserCart(userId);
-          // Convert backend items to local format
-          const localItems: CartItem[] = backendItems.map((item: any) => ({
-            id: item.id,
-            product: item.product,
-            quantity: item.quantity,
-          }));
+        // TODO: Load cart from Strapi backend
+        // try {
+        //   const backendItems = await fetchUserCart(userId);
+        //   // Convert backend items to local format
+        //   const localItems: CartItem[] = backendItems.map((item: any) => ({
+        //     id: item.id,
+        //     product: item.product,
+        //     quantity: item.quantity,
+        //   }));
 
-          const total = localItems.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
-          const itemCount = localItems.reduce((sum, item) => sum + item.quantity, 0);
+        //   const total = localItems.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
+        //   const itemCount = localItems.reduce((sum, item) => sum + item.quantity, 0);
 
-          set({
-            items: localItems,
-            total,
-            itemCount,
-          });
-        } catch (error) {
-          console.error('Error loading cart from backend:', error);
-        }
+        //   set({
+        //     items: localItems,
+        //     total,
+        //     itemCount,
+        //   });
+        // } catch (error) {
+        //   console.error('Error loading cart from backend:', error);
+        // }
       },
     }),
     { name: 'cart-store' }

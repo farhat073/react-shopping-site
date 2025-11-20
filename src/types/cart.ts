@@ -2,7 +2,7 @@ import type { Product } from './product';
 
 export interface CartItem {
   id: string;
-  user?: string; // Directus user ID (optional for local cart)
+  user?: string; // Strapi user ID (optional for local cart) - placeholder
   product: Product;
   quantity: number;
 }

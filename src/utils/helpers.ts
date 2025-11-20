@@ -1,5 +1,4 @@
 import type { Product } from '../types';
-import { DIRECTUS_URL } from '../config';
 
 export const formatPrice = (price: number, currency: string = 'USD'): string => {
   return new Intl.NumberFormat('en-US', {
@@ -25,31 +24,5 @@ export const debounce = <T extends (...args: unknown[]) => unknown>(
   return (...args: Parameters<T>) => {
     clearTimeout(timeout);
     timeout = setTimeout(() => func(...args), wait);
-  };
-};
-
-export const getAssetUrl = (fileId: string): string => {
-  return `${DIRECTUS_URL}/assets/${fileId}`;
-};
-
-export const handleDirectusError = (error: unknown): string => {
-  if (error instanceof Error) {
-    return error.message;
-  }
-  if (typeof error === 'object' && error !== null) {
-    try {
-      return JSON.stringify(error, Object.getOwnPropertyNames(error), 2);
-    } catch {
-      return String(error);
-    }
-  }
-  return String(error);
-};
-
-export const formatErrorForLogging = (error: unknown): { message: string; fullError: unknown } => {
-  const message = handleDirectusError(error);
-  return {
-    message,
-    fullError: error,
   };
 };

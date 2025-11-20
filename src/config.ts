@@ -1,7 +1,3 @@
-export const DIRECTUS_URL = import.meta.env.VITE_DIRECTUS_URL;
 export const SITE_URL = import.meta.env.VITE_SITE_URL;
+export const STRAPI_URL = import.meta.env.VITE_STRAPI_URL || 'http://localhost:1337';
 export const SITE_NAME = 'My Store';
-
-if (!DIRECTUS_URL) {
-  throw new Error('VITE_DIRECTUS_URL environment variable is required but not set. Please set it in your .env file.');
-}

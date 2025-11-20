@@ -1,73 +1,54 @@
-import { authentication, readMe } from '@directus/sdk';
-import { directus } from './directusClient';
-import { DIRECTUS_URL } from '../config';
+import { strapi } from './strapiClient';
 import type { User, LoginCredentials, SignupCredentials } from '../types';
 
-// Add authentication to the client
-const directusWithAuth = directus.with(authentication());
+export const login = async (credentials: LoginCredentials): Promise<{ user: User; jwt: string }> => {
+  const response = await strapi.post('/auth/local', {
+    identifier: credentials.email,
+    password: credentials.password,
+  });
 
-export const login = async (credentials: LoginCredentials): Promise<User> => {
-  try {
-    await directusWithAuth.login(credentials);
-    const user = await directusWithAuth.request(readMe());
-    return user as User;
-  } catch (error) {
-    console.error('Login error:', error);
-    throw error;
+  if (response.jwt) {
+    strapi.setToken(response.jwt);
+    return {
+      user: response.user,
+      jwt: response.jwt,
+    };
   }
+  throw new Error('Login failed');
 };
 
-export const signup = async (credentials: SignupCredentials): Promise<User> => {
-  try {
-    // Directus signup typically requires admin approval or specific setup
-    // This is a basic implementation - adjust based on your Directus configuration
-    const response = await fetch(`${DIRECTUS_URL}/users/register`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email: credentials.email,
-        password: credentials.password,
-        first_name: credentials.first_name,
-        last_name: credentials.last_name,
-      }),
-    });
+export const signup = async (credentials: SignupCredentials): Promise<{ user: User; jwt: string }> => {
+  const response = await strapi.post('/auth/local/register', {
+    username: credentials.email,
+    email: credentials.email,
+    password: credentials.password,
+    firstName: credentials.first_name,
+    lastName: credentials.last_name,
+  });
 
-    if (!response.ok) {
-      throw new Error('Signup failed');
-    }
-
-    const user = await response.json();
-    return user.data as User;
-  } catch (error) {
-    console.error('Signup error:', error);
-    throw error;
+  if (response.jwt) {
+    strapi.setToken(response.jwt);
+    return {
+      user: response.user,
+      jwt: response.jwt,
+    };
   }
+  throw new Error('Signup failed');
 };
 
 export const logout = async (): Promise<void> => {
-  try {
-    await directusWithAuth.logout();
-  } catch (error) {
-    console.error('Logout error:', error);
-    throw error;
-  }
+  // For Strapi, logout is just clearing the token on client side
+  strapi.setToken('');
 };
 
-export const getCurrentUser = async (): Promise<User | null> => {
-  try {
-    const user = await directusWithAuth.request(readMe());
-    return user as User;
-  } catch (error) {
-    console.error('Get current user error:', error);
-    return null;
-  }
+export const getCurrentUser = async (): Promise<User> => {
+  const response = await strapi.get('/users/me');
+  return response;
 };
 
 export const isAuthenticated = async (): Promise<boolean> => {
   try {
-    await directusWithAuth.request(readMe());
+    await getCurrentUser();
     return true;
   } catch {
     return false;

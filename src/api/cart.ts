@@ -1,127 +1,110 @@
-import { readItems, createItem, updateItem, deleteItem } from '@directus/sdk';
-import { directus } from './directusClient';
+import { strapi } from './strapiClient';
 import type { CartItem } from '../types';
 
 export const getCartItemsFromDirectus = async (userId: string): Promise<CartItem[]> => {
-  try {
-    console.log('Fetching cart items for user:', userId);
-    const response = await directus.request(
-      readItems('cart_items', {
-        filter: {
-          user: {
-            _eq: userId
-          }
-        },
-        fields: ['*', 'product.*', 'product.category.*', 'product.images.*']
-      })
-    );
-    return response as CartItem[];
-  } catch (error: any) {
-    console.error('Error fetching user cart:', error);
-    console.error('Error details:', JSON.stringify(error, null, 2));
-    if (error.response?.status === 403) {
-      throw new Error('Authentication required. Please log in to view your cart.');
-    }
-    throw error;
-  }
+  const response = await strapi.get('/cart-items', {
+    'filters[user][id][$eq]': userId,
+    populate: 'product,product.category,product.images',
+  });
+
+  return response.data?.map((item: any) => ({
+    id: item.id.toString(),
+    user: item.attributes.user?.data?.id?.toString(),
+    product: {
+      id: item.attributes.product.data.id.toString(),
+      title: item.attributes.product.data.attributes.title,
+      slug: item.attributes.product.data.attributes.slug,
+      description: item.attributes.product.data.attributes.description,
+      price: item.attributes.product.data.attributes.price,
+      currency: item.attributes.product.data.attributes.currency || 'USD',
+      stock: item.attributes.product.data.attributes.stock,
+      published: item.attributes.product.data.attributes.published,
+      images: item.attributes.product.data.attributes.images?.data || [],
+      category: item.attributes.product.data.attributes.category?.data ? {
+        id: item.attributes.product.data.attributes.category.data.id.toString(),
+        name: item.attributes.product.data.attributes.category.data.attributes.name,
+        slug: item.attributes.product.data.attributes.category.data.attributes.slug,
+      } : undefined,
+      created_at: item.attributes.product.data.attributes.createdAt,
+    },
+    quantity: item.attributes.quantity,
+  })) || [];
 };
 
 export const addCartItemToDirectus = async (userId: string, productId: string, quantity: number = 1): Promise<CartItem> => {
-  try {
-    console.log('Adding to cart - user:', userId, 'product:', productId, 'quantity:', quantity);
-    // Check if item already exists in cart
-    const existingItems = await directus.request(
-      readItems('cart_items', {
-        filter: {
-          user: { _eq: userId },
-          product: { _eq: productId }
-        },
-        limit: 1
-      })
-    );
+  // First check if item already exists
+  const existingResponse = await strapi.get('/cart-items', {
+    'filters[user][id][$eq]': userId,
+    'filters[product][id][$eq]': productId,
+  });
 
-    if (existingItems.length > 0) {
-      // Update quantity by adding the new quantity
-      const updatedItem = await directus.request(
-        updateItem('cart_items', existingItems[0].id, {
-          quantity: existingItems[0].quantity + quantity
-        })
-      );
-      return updatedItem as CartItem;
-    } else {
-      // Create new cart item
-      const newItem = await directus.request(
-        createItem('cart_items', {
-          user: userId,
-          product: productId,
-          quantity
-        })
-      );
-      return newItem as CartItem;
-    }
-  } catch (error: any) {
-    console.error('Error adding to cart:', error);
-    console.error('Error details:', JSON.stringify(error, null, 2));
-    if (error.response?.status === 403) {
-      throw new Error('Authentication required. Please log in to add items to your cart.');
-    }
-    throw error;
+  if (existingResponse.data && existingResponse.data.length > 0) {
+    // Update existing item
+    const existingItem = existingResponse.data[0];
+    const newQuantity = existingItem.attributes.quantity + quantity;
+    return updateCartItemInDirectus(existingItem.id.toString(), newQuantity);
   }
+
+  // Create new item
+  const response = await strapi.post('/cart-items', {
+    data: {
+      user: userId,
+      product: productId,
+      quantity,
+    },
+  });
+
+  // Fetch the created item with populated data
+  return getCartItemsFromDirectus(userId).then(items =>
+    items.find(item => item.id === response.data.id.toString())
+  ).then(item => {
+    if (!item) throw new Error('Failed to create cart item');
+    return item;
+  });
 };
 
 export const updateCartItemInDirectus = async (cartItemId: string, quantity: number): Promise<CartItem> => {
-  try {
-    if (quantity <= 0) {
-      await directus.request(deleteItem('cart_items', cartItemId));
-      throw new Error('Item removed from cart');
-    }
+  await strapi.put(`/cart-items/${cartItemId}`, {
+    data: {
+      quantity,
+    },
+  });
 
-    const updatedItem = await directus.request(
-      updateItem('cart_items', cartItemId, { quantity })
-    );
-    return updatedItem as CartItem;
-  } catch (error: any) {
-    console.error('Error updating cart item quantity:', error);
-    if (error.response?.status === 403) {
-      throw new Error('Authentication required. Please log in to update your cart.');
-    }
-    throw error;
-  }
+  // Return updated item - need to fetch with populated data
+  const updatedResponse = await strapi.get(`/cart-items/${cartItemId}`, {
+    populate: 'product,product.category,product.images',
+  });
+
+  const item = updatedResponse.data;
+  return {
+    id: item.id.toString(),
+    user: item.attributes.user?.data?.id?.toString(),
+    product: {
+      id: item.attributes.product.data.id.toString(),
+      title: item.attributes.product.data.attributes.title,
+      slug: item.attributes.product.data.attributes.slug,
+      description: item.attributes.product.data.attributes.description,
+      price: item.attributes.product.data.attributes.price,
+      currency: item.attributes.product.data.attributes.currency || 'USD',
+      stock: item.attributes.product.data.attributes.stock,
+      published: item.attributes.product.data.attributes.published,
+      images: item.attributes.product.data.attributes.images?.data || [],
+      category: item.attributes.product.data.attributes.category?.data ? {
+        id: item.attributes.product.data.attributes.category.data.id.toString(),
+        name: item.attributes.product.data.attributes.category.data.attributes.name,
+        slug: item.attributes.product.data.attributes.category.data.attributes.slug,
+      } : undefined,
+      created_at: item.attributes.product.data.attributes.createdAt,
+    },
+    quantity: item.attributes.quantity,
+  };
 };
 
 export const deleteCartItemFromDirectus = async (cartItemId: string): Promise<void> => {
-  try {
-    await directus.request(deleteItem('cart_items', cartItemId));
-  } catch (error: any) {
-    console.error('Error removing from cart:', error);
-    if (error.response?.status === 403) {
-      throw new Error('Authentication required. Please log in to remove items from your cart.');
-    }
-    throw error;
-  }
+  await strapi.delete(`/cart-items/${cartItemId}`);
 };
 
 export const clearUserCart = async (userId: string): Promise<void> => {
-  try {
-    const cartItems = await directus.request(
-      readItems('cart_items', {
-        filter: {
-          user: { _eq: userId }
-        },
-        fields: ['id']
-      })
-    );
-
-    const deletePromises = cartItems.map(item =>
-      directus.request(deleteItem('cart_items', item.id))
-    );
-
-    await Promise.all(deletePromises);
-  } catch (error: any) {
-    console.error('Error clearing cart:', error);
-    if (error.response?.status === 403) {
-      throw new Error('Authentication required. Please log in to clear your cart.');
-    }
-    throw error;
-  }
+  const items = await getCartItemsFromDirectus(userId);
+  await Promise.all(items.map(item => deleteCartItemFromDirectus(item.id)));
 };

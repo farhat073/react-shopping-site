@@ -1,6 +1,6 @@
 export interface Order {
   id: string;
-  user: string; // Directus user ID
+  user: string; // Strapi user ID - placeholder
   total_price: number;
   status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
   created_at: string;

@@ -1,8 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import toast from 'react-hot-toast';
-import { directus } from '../api/directusClient';
-import { readMe, createUser } from '@directus/sdk';
+import { login, signup, logout, getCurrentUser } from '../api/auth';
 import type { User, LoginCredentials, SignupCredentials } from '../types';
 
 interface AuthContextType {
@@ -33,18 +32,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   useEffect(() => {
     const restoreSession = async () => {
-      const accessToken = localStorage.getItem('directus_access_token');
-      const refreshToken = localStorage.getItem('directus_refresh_token');
-      if (accessToken && refreshToken) {
+      const token = localStorage.getItem('strapi_jwt');
+      if (token) {
         try {
-          directus.setToken(accessToken);
-          const currentUser = await directus.request(readMe());
-          setUser(currentUser as User);
+          // Import the strapi client and set token
+          const { strapi } = await import('../api/strapiClient');
+          strapi.setToken(token);
+          const currentUser = await getCurrentUser();
+          setUser(currentUser);
         } catch (error) {
           console.error('Error restoring session:', error);
-          // Clear tokens on failure
-          localStorage.removeItem('directus_access_token');
-          localStorage.removeItem('directus_refresh_token');
+          // Clear token on failure
+          localStorage.removeItem('strapi_jwt');
           setUser(null);
         }
       }
@@ -54,20 +53,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     restoreSession();
   }, []);
 
-  const login = async (credentials: LoginCredentials) => {
+  const handleLogin = async (credentials: LoginCredentials) => {
     setLoading(true);
     try {
-      const response = await directus.login({
-        email: credentials.email,
-        password: credentials.password,
-      });
-      const accessToken = response.access_token;
-      const refreshToken = response.refresh_token;
-      localStorage.setItem('directus_access_token', accessToken || '');
-      localStorage.setItem('directus_refresh_token', refreshToken || '');
-      directus.setToken(accessToken);
-      const currentUser = await directus.request(readMe());
-      setUser(currentUser as User);
+      const { user: loggedInUser, jwt } = await login(credentials);
+      localStorage.setItem('strapi_jwt', jwt);
+      setUser(loggedInUser);
       toast.success('Successfully logged in!');
     } catch (error) {
       toast.error('Login failed. Please check your credentials.');
@@ -77,19 +68,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const signup = async (credentials: SignupCredentials) => {
+  const handleSignup = async (credentials: SignupCredentials) => {
     setLoading(true);
     try {
-      await directus.request(
-        createUser({
-          email: credentials.email,
-          password: credentials.password,
-          first_name: credentials.first_name,
-          last_name: credentials.last_name,
-        })
-      );
-      // After signup, automatically log in
-      await login({ email: credentials.email, password: credentials.password });
+      const { user: newUser, jwt } = await signup(credentials);
+      localStorage.setItem('strapi_jwt', jwt);
+      setUser(newUser);
       toast.success('Account created successfully!');
     } catch (error) {
       toast.error('Signup failed. Please try again.');
@@ -99,22 +83,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const logout = async () => {
+  const handleLogout = async () => {
     setLoading(true);
     try {
-      const refreshToken = localStorage.getItem('directus_refresh_token');
-      if (refreshToken) {
-        await directus.logout({ refresh_token: refreshToken });
-      }
-      localStorage.removeItem('directus_access_token');
-      localStorage.removeItem('directus_refresh_token');
+      await logout();
+      localStorage.removeItem('strapi_jwt');
       setUser(null);
       toast.success('Successfully logged out!');
     } catch (error) {
       console.error('Logout error:', error);
-      // Clear tokens even on error
-      localStorage.removeItem('directus_access_token');
-      localStorage.removeItem('directus_refresh_token');
+      // Clear token even on error
+      localStorage.removeItem('strapi_jwt');
       setUser(null);
       toast.error('Logout failed.');
     } finally {
@@ -124,9 +103,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const value: AuthContextType = {
     user,
-    login,
-    signup,
-    logout,
+    login: handleLogin,
+    signup: handleSignup,
+    logout: handleLogout,
     loading,
   };
 

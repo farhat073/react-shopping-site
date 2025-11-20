@@ -19,7 +19,7 @@ interface CartContextType {
   updateQuantity: (id: string, quantity: number) => Promise<void>;
   clearCart: () => Promise<void>;
   buyNow: (product: Product) => Promise<void>;
-  syncWithDirectus: () => Promise<void>;
+  syncWithStrapi: () => Promise<void>;
 }
 
 export const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -60,37 +60,37 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
   }, [items]);
 
-  const syncWithDirectus = useCallback(async () => {
+  const syncWithStrapi = useCallback(async () => {
     if (!user) return;
 
     try {
-      console.log("🔄 Syncing cart with Directus for:", user.id);
+      console.log("🔄 Syncing cart with Strapi for:", user.id);
 
       // 1. Fetch cart_items where user = $CURRENT_USER
-      const directusItems = await getCartItemsFromDirectus(user.id);
+      const strapiItems = await getCartItemsFromDirectus(user.id);
 
-      // 2. Set items to Directus items
-      setItems(directusItems);
+      // 2. Set items to Strapi items
+      setItems(strapiItems);
 
       // 3. Delete localStorage cart
       localStorage.removeItem(CART_STORAGE_KEY);
 
-      console.log("✅ Sync complete. Directus items:", directusItems);
+      console.log("✅ Sync complete. Strapi items:", strapiItems);
     } catch (error) {
       console.error("❌ Error syncing cart:", error);
     }
   }, [user]);
 
-  // Sync with Directus when user logs in
+  // Sync with Strapi when user logs in
   useEffect(() => {
     if (user) {
-      syncWithDirectus();
+      syncWithStrapi();
     } else {
       // When user logs out, clear cart
       setItems([]);
       localStorage.removeItem(CART_STORAGE_KEY);
     }
-  }, [user, syncWithDirectus]);
+  }, [user, syncWithStrapi]);
 
   const addToCart = useCallback(async (product: Product, quantity = 1) => {
     try {
@@ -203,7 +203,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     updateQuantity,
     clearCart,
     buyNow,
-    syncWithDirectus,
+    syncWithStrapi,
   };
 
   return (

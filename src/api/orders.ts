@@ -1,76 +1,64 @@
-import { createItem, readItems, updateItem } from '@directus/sdk';
-import { directus } from './directusClient';
+import { strapi } from './strapiClient';
+import type { Order } from '../types';
 
-interface OrderItem {
+interface OrderItemInput {
   product: string;
   quantity: number;
   price: number;
 }
 
-export const createOrder = async (userId: string, totalPrice: number, _items: OrderItem[]): Promise<string> => {
-  try {
-    // Create the order
-    const order = await directus.request(
-      createItem('orders', {
-        user: userId,
-        total_price: totalPrice,
-        status: 'pending'
-      })
-    );
+export const createOrder = async (userId: string, totalPrice: number, items: OrderItemInput[]): Promise<string> => {
+  const response = await strapi.post('/orders', {
+    data: {
+      user: userId,
+      total_price: totalPrice,
+      status: 'pending',
+      items: items.map(item => ({
+        product: item.product,
+        quantity: item.quantity,
+        price: item.price,
+      })),
+    },
+  });
 
-    // For now, skip order_items since the collection might not exist
-    // In a real implementation, you'd create order items here
-
-    return order.id;
-  } catch (error) {
-    console.error('Error creating order:', error);
-    throw error;
-  }
+  return response.data.id.toString();
 };
 
-export const fetchOrdersByUser = async (userId: string) => {
-  try {
-    const response = await directus.request(
-      readItems('orders', {
-        filter: {
-          user: {
-            _eq: userId
-          }
-        },
-        fields: ['*'],
-        sort: ['-created_at']
-      })
-    );
-    return response;
-  } catch (error) {
-    console.error('Error fetching orders:', error);
-    throw error;
-  }
+export const fetchOrdersByUser = async (userId: string): Promise<Order[]> => {
+  const response = await strapi.get('/orders', {
+    'filters[user][id][$eq]': userId,
+    populate: '*',
+    sort: 'createdAt:desc',
+  });
+
+  return response.data?.map((item: any) => ({
+    id: item.id.toString(),
+    user: item.attributes.user?.data?.id?.toString() || userId,
+    total_price: item.attributes.total_price,
+    status: item.attributes.status,
+    created_at: item.attributes.createdAt,
+  })) || [];
 };
 
-export const fetchAllOrders = async () => {
-  try {
-    const response = await directus.request(
-      readItems('orders', {
-        fields: ['*'],
-        sort: ['-created_at']
-      })
-    );
-    return response;
-  } catch (error) {
-    console.error('Error fetching all orders:', error);
-    throw error;
-  }
+export const fetchAllOrders = async (): Promise<Order[]> => {
+  const response = await strapi.get('/orders', {
+    populate: 'user',
+    sort: 'createdAt:desc',
+  });
+
+  return response.data?.map((item: any) => ({
+    id: item.id.toString(),
+    user: item.attributes.user?.data?.id?.toString() || '',
+    total_price: item.attributes.total_price,
+    status: item.attributes.status,
+    created_at: item.attributes.createdAt,
+  })) || [];
 };
 
-export const updateOrderStatus = async (orderId: string, status: string) => {
-  try {
-    const response = await directus.request(
-      updateItem('orders', orderId, { status })
-    );
-    return response;
-  } catch (error) {
-    console.error('Error updating order status:', error);
-    throw error;
-  }
+export const updateOrderStatus = async (orderId: string, status: string): Promise<void> => {
+  await strapi.put(`/orders/${orderId}`, {
+    data: {
+      status,
+    },
+  });
 };
