@@ -6,8 +6,6 @@ services:
     buildCommand: cd backend && npm install
     startCommand: cd backend && npm run start
     envVars:
-      - key: NODE_VERSION
-        value: "18"
       - key: NODE_ENV
         value: production
       - key: DATABASE_URL
