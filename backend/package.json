@@ -14,10 +14,10 @@
     "@strapi/plugin-users-permissions": "4.25.1",
     "@strapi/plugin-i18n": "4.25.1",
     "@strapi/provider-upload-local": "4.25.1",
-    "better-sqlite3": "8.6.0"
+    "better-sqlite3": "9.4.3"
   },
   "engines": {
-    "node": ">=16.0.0 <=20.x.x",
+    "node": ">=18.0.0 <=22.x.x",
     "npm": ">=6.0.0"
   },
   "strapi": {
