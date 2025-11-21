@@ -3,7 +3,7 @@ services:
     name: strapi-backend
     runtime: node
     buildCommand: cd backend && npm install
-    startCommand: cd backend && npm run start
+    startCommand: cd backend && mkdir -p public/uploads && npm run start
     envVars:
       - key: NODE_VERSION
         value: 20
