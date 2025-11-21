@@ -14,7 +14,7 @@
     "@strapi/plugin-users-permissions": "4.25.1",
     "@strapi/plugin-i18n": "4.25.1",
     "@strapi/provider-upload-local": "4.25.1",
-    "better-sqlite3": "9.4.3"
+    "sqlite3": "^5.1.6"
   },
   "engines": {
     "node": ">=18.0.0 <=22.x.x",
