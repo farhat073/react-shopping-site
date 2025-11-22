@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
@@ -12,17 +12,30 @@ export const Login = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const { login } = useAuth();
+  const { login, user, clearError, error: authError } = useAuth();
   const navigate = useNavigate();
+
+  // Handle redirect after login based on user role
+  useEffect(() => {
+    if (user) {
+      // Redirect based on user role
+      if (user.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/');
+      }
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
+    clearError(); // Clear any previous errors
 
     try {
       await login({ email, password });
-      navigate('/');
+      // Navigation will be handled by the useEffect above when user state updates
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed');
     } finally {
@@ -86,8 +99,20 @@ export const Login = () => {
                 error={error.includes('password') ? error : undefined}
               />
 
-              {error && !error.includes('email') && !error.includes('password') && (
-                <div className="text-red-600 text-sm text-center">{error}</div>
+              <div className="flex items-center justify-between">
+                <div></div>
+                <Link
+                  to="/forgot-password"
+                  className="text-sm text-primary-600 hover:text-primary-500 transition-colors"
+                >
+                  Forgot your password?
+                </Link>
+              </div>
+
+              {(error || authError) && (
+                <div className="text-red-600 text-sm text-center">
+                  {error || authError}
+                </div>
               )}
 
               <Button

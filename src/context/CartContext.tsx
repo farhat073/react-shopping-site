@@ -32,14 +32,14 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   // Initialize cart on mount and when auth state changes
   useEffect(() => {
     cartStore.initializeCart(user?.id || null);
-  }, [user?.id, cartStore]);
+  }, [user?.id, cartStore.initializeCart]);
 
   // Sync guest cart to user cart when user logs in
   useEffect(() => {
     if (user && cartStore.isGuest) {
       cartStore.syncGuestCartToUser(user.id);
     }
-  }, [user, cartStore.isGuest, cartStore]);
+  }, [user, cartStore.isGuest, cartStore.syncGuestCartToUser]);
 
   const addToCart = useCallback(async (product: Product, quantity = 1, variantId: string | null = null) => {
     try {

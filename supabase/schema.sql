@@ -160,9 +160,11 @@ CREATE POLICY "Users can update their own profile" ON users
 
 CREATE POLICY "Admins can view all users" ON users
     FOR SELECT USING (
+        auth.role() = 'authenticated' AND
         EXISTS (
-            SELECT 1 FROM users
-            WHERE id = auth.uid() AND role = 'admin'
+            SELECT 1 FROM auth.users
+            WHERE id = auth.uid() AND 
+            raw_user_meta_data->>'role' = 'admin'
         )
     );
 

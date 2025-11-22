@@ -1,15 +1,21 @@
 export interface User {
   id: string;
   email: string;
-  first_name?: string;
-  last_name?: string;
-  role?: 'user' | 'admin';
+  full_name: string;
+  phone?: string;
+  role: 'customer' | 'admin';
+  avatar_url?: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface AuthState {
   user: User | null;
   isAuthenticated: boolean;
+  isAdmin: boolean;
   isLoading: boolean;
+  error: string | null;
 }
 
 export interface LoginCredentials {
@@ -20,6 +26,15 @@ export interface LoginCredentials {
 export interface SignupCredentials {
   email: string;
   password: string;
-  first_name?: string;
-  last_name?: string;
+  full_name: string;
+  phone?: string;
+}
+
+export interface AuthError {
+  message: string;
+  status?: number;
+}
+
+export interface ResetPasswordCredentials {
+  email: string;
 }

@@ -155,23 +155,38 @@ export const Header = () => {
                     }}
                   >
                     <User className="h-4 w-4" />
-                    <span className="text-sm">{user?.first_name || user?.email}</span>
+                    <span className="text-sm">{user?.full_name || user?.email}</span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
                   <div className="px-2 py-1.5">
                     <p className="text-sm font-medium text-gray-900">{user?.email}</p>
-                    {user?.first_name && user?.last_name && (
-                      <p className="text-xs text-gray-500">{user.first_name} {user.last_name}</p>
-                    )}
+                    <p className="text-xs text-gray-500">{user?.full_name}</p>
                   </div>
                   <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link to="/profile" className="flex items-center w-full">
+                      <User className="h-4 w-4 mr-2" />
+                      Profile
+                    </Link>
+                  </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link to="/orders" className="flex items-center w-full">
                       <Package className="h-4 w-4 mr-2" />
                       My Orders
                     </Link>
                   </DropdownMenuItem>
+                  {user?.role === 'admin' && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem asChild>
+                        <Link to="/admin" className="flex items-center w-full">
+                          <User className="h-4 w-4 mr-2" />
+                          Admin Dashboard
+                        </Link>
+                      </DropdownMenuItem>
+                    </>
+                  )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={logout} className="text-red-600 focus:text-red-600">
                     <LogOut className="h-4 w-4 mr-2" />
@@ -241,6 +256,14 @@ export const Header = () => {
                   {user ? (
                     <>
                       <Link
+                        to="/profile"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="text-base font-medium text-gray-900 hover:text-gray-700 flex items-center gap-2"
+                      >
+                        <User className="h-4 w-4" />
+                        Profile
+                      </Link>
+                      <Link
                         to="/orders"
                         onClick={() => setMobileMenuOpen(false)}
                         className="text-base font-medium text-gray-900 hover:text-gray-700 flex items-center gap-2"
@@ -248,8 +271,19 @@ export const Header = () => {
                         <Package className="h-4 w-4" />
                         My Orders
                       </Link>
+                      {user?.role === 'admin' && (
+                        <Link
+                          to="/admin"
+                          onClick={() => setMobileMenuOpen(false)}
+                          className="text-base font-medium text-gray-900 hover:text-gray-700 flex items-center gap-2"
+                        >
+                          <User className="h-4 w-4" />
+                          Admin Dashboard
+                        </Link>
+                      )}
                       <div className="pt-4 border-t border-gray-200">
-                        <p className="text-sm text-gray-600 mb-2">{user?.email}</p>
+                        <p className="text-sm text-gray-600 mb-1">{user?.email}</p>
+                        <p className="text-xs text-gray-500 mb-2">{user?.full_name}</p>
                         <Button
                           onClick={() => {
                             logout();

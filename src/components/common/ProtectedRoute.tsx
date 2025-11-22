@@ -6,12 +6,14 @@ interface ProtectedRouteProps {
   children: ReactNode;
   requireAuth?: boolean;
   requireAdmin?: boolean;
+  allowAuthCompletion?: boolean; // Allow authenticated users to complete auth process
 }
 
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children,
   requireAuth = true,
-  requireAdmin = false
+  requireAdmin = false,
+  allowAuthCompletion = false
 }) => {
   const { user, isLoading } = useAuth();
   const location = useLocation();
@@ -37,8 +39,8 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     return <Navigate to="/" replace />;
   }
 
-  if (!requireAuth && isAuthenticated) {
-    // Redirect authenticated users away from auth pages
+  if (!requireAuth && isAuthenticated && !allowAuthCompletion) {
+    // Redirect authenticated users away from auth pages (unless allowAuthCompletion is true)
     return <Navigate to="/" replace />;
   }
 

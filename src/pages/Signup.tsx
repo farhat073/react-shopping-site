@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
@@ -10,13 +10,13 @@ export const Signup = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    firstName: '',
-    lastName: '',
+    fullName: '',
+    phone: '',
   });
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const { signup } = useAuth();
+  const { signup, error: authError, clearError } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,13 +30,14 @@ export const Signup = () => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
+    clearError(); // Clear any previous auth context errors
 
     try {
       await signup({
         email: formData.email,
         password: formData.password,
-        first_name: formData.firstName,
-        last_name: formData.lastName,
+        full_name: formData.fullName,
+        phone: formData.phone || undefined,
       });
       navigate('/');
     } catch (err) {
@@ -82,25 +83,25 @@ export const Signup = () => {
         >
           <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
             <form className="space-y-6" onSubmit={handleSubmit}>
-              <div className="grid grid-cols-2 gap-4">
-                <Input
-                  label="First name"
-                  type="text"
-                  name="firstName"
-                  autoComplete="given-name"
-                  value={formData.firstName}
-                  onChange={handleChange}
-                />
+              <Input
+                label="Full name"
+                type="text"
+                name="fullName"
+                autoComplete="name"
+                required
+                value={formData.fullName}
+                onChange={handleChange}
+                error={error.includes('name') ? error : undefined}
+              />
 
-                <Input
-                  label="Last name"
-                  type="text"
-                  name="lastName"
-                  autoComplete="family-name"
-                  value={formData.lastName}
-                  onChange={handleChange}
-                />
-              </div>
+              <Input
+                label="Phone (optional)"
+                type="tel"
+                name="phone"
+                autoComplete="tel"
+                value={formData.phone}
+                onChange={handleChange}
+              />
 
               <Input
                 label="Email address"
@@ -124,8 +125,10 @@ export const Signup = () => {
                 error={error.includes('password') ? error : undefined}
               />
 
-              {error && !error.includes('email') && !error.includes('password') && (
-                <div className="text-red-600 text-sm text-center">{error}</div>
+              {(error || authError) && (
+                <div className="text-red-600 text-sm text-center">
+                  {error || authError}
+                </div>
               )}
 
               <Button

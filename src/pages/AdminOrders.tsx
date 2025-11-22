@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import AdminLayout from '../components/layout/AdminLayout';
-import { fetchAllOrders, updateOrderStatus } from '../api/orders';
+import { fetchAllOrders, updateOrder } from '../api/orders';
 import { formatPrice } from '../utils/helpers';
 import { Badge } from '../components/common/Badge';
 import type { Order } from '../types';
@@ -34,7 +34,7 @@ const AdminOrders = () => {
 
   const handleStatusChange = async (orderId: string, newStatus: string) => {
     try {
-      await updateOrderStatus(orderId, newStatus);
+      await updateOrder(orderId, newStatus);
       setOrders(prevOrders =>
         prevOrders.map(order =>
           order.id === orderId ? { ...order, status: newStatus as Order['status'] } : order

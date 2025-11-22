@@ -12,6 +12,8 @@ import { Cart } from './pages/Cart';
 import { About } from './pages/About';
 import { Login } from './pages/Login';
 import { Signup } from './pages/Signup';
+import { ForgotPassword } from './pages/ForgotPassword';
+import { Profile } from './pages/Profile';
 import { useServiceWorker } from './hooks/useServiceWorker';
 
 const PaymentSuccess = lazy(() => import('./pages/PaymentSuccess'));
@@ -76,6 +78,11 @@ function App() {
                     </Suspense>
                   </ProtectedRoute>
                 } />
+                <Route path="profile" element={
+                  <ProtectedRoute>
+                    <Profile />
+                  </ProtectedRoute>
+                } />
                 <Route path="admin/orders" element={
                   <ProtectedRoute requireAdmin>
                     <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
@@ -119,8 +126,13 @@ function App() {
                 </ProtectedRoute>
               } />
               <Route path="/signup" element={
-                <ProtectedRoute requireAuth={false}>
+                <ProtectedRoute requireAuth={false} allowAuthCompletion>
                   <Signup />
+                </ProtectedRoute>
+              } />
+              <Route path="/forgot-password" element={
+                <ProtectedRoute requireAuth={false}>
+                  <ForgotPassword />
                 </ProtectedRoute>
               } />
             </Routes>
