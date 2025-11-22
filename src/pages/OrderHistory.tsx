@@ -1,15 +1,39 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
-import { useAuth } from '../context/AuthContext';
-import { fetchOrdersByUser } from '../api/orders';
+import { useAuth } from '../hooks/useAuth';
+import { getOrders } from '../api/orders';
 import { formatPrice } from '../utils/helpers';
 import { Badge } from '../components/common/Badge';
 import type { Order } from '../types';
 
+interface OrderWithItems extends Order {
+  items?: Array<{
+    id: string;
+    quantity: number;
+    price: number;
+    product?: {
+      id: string;
+      title: string;
+      slug: string;
+      images?: Array<{
+        url: string;
+        alt_text?: string;
+        is_primary: boolean;
+      }>;
+    };
+    variant?: {
+      id: string;
+      name: string;
+      value: string;
+      price_modifier: number;
+    };
+  }>;
+}
+
 const OrderHistory = () => {
   const { user } = useAuth();
-  const [orders, setOrders] = useState<Order[]>([]);
+  const [orders, setOrders] = useState<OrderWithItems[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -20,8 +44,8 @@ const OrderHistory = () => {
       setLoading(true);
       setError(null);
       try {
-        const userOrders = await fetchOrdersByUser(user.id);
-        setOrders(userOrders as Order[]);
+        const userOrders = await getOrders(user.id);
+        setOrders(userOrders as OrderWithItems[]);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load orders');
       } finally {
@@ -122,9 +146,32 @@ const OrderHistory = () => {
                       </div>
                     </div>
 
-                    {/* Order items would be displayed here if available */}
-                    <div className="text-sm text-gray-600">
-                      Order details will be displayed here when order items are implemented.
+                    {/* Order items */}
+                    <div className="mt-4">
+                      <h4 className="text-sm font-medium text-gray-900 mb-2">Order Items</h4>
+                      <div className="space-y-2">
+                        {order.items?.map((item) => (
+                           <div key={item.id} className="flex items-center justify-between bg-gray-50 p-3 rounded-md">
+                             <div className="flex items-center space-x-3">
+                               {item.product?.images?.find((img) => img.is_primary)?.url && (
+                                 <img
+                                   src={item.product.images.find((img) => img.is_primary)!.url}
+                                   alt={item.product.title}
+                                   className="w-12 h-12 object-cover rounded-md"
+                                 />
+                               )}
+                              <div>
+                                <p className="text-sm font-medium text-gray-900">{item.product?.title}</p>
+                                {item.variant && (
+                                  <p className="text-xs text-gray-600">{item.variant.name}: {item.variant.value}</p>
+                                )}
+                                <p className="text-xs text-gray-600">Qty: {item.quantity}</p>
+                              </div>
+                            </div>
+                            <p className="text-sm font-medium text-gray-900">{formatPrice(item.price * item.quantity, 'USD')}</p>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 ))}

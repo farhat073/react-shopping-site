@@ -2,7 +2,6 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Twitter, Facebook } from 'lucide-react';
 import { SITE_CONFIG } from '../../utils/constants';
-import { DIRECTUS_URL } from '../../config';
 
 export const Footer = () => {
   return (
@@ -45,15 +44,9 @@ export const Footer = () => {
                 </Link>
               </li>
               <li>
-                <a
-                  href={`${DIRECTUS_URL}/admin`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
-                  aria-label="Open Directus Admin Dashboard in new tab"
-                >
+                <Link to="/admin" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
                   Admin
-                </a>
+                </Link>
               </li>
             </ul>
           </motion.div>

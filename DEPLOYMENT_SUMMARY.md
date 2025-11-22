@@ -10,7 +10,7 @@
 
 ### 2. Vite Configuration
 - ✅ Confirmed output directory is `dist` (default)
-- ✅ Updated `vite.config.ts` to use environment variables for proxy targets
+- ✅ Simplified `vite.config.ts` with clean React configuration
 - ✅ Added explicit build configuration with `outDir: 'dist'`
 
 ### 3. .gitignore
@@ -21,10 +21,10 @@
   - `.DS_Store`
 
 ### 4. Environment Variables
-- ✅ All code now uses `import.meta.env.VITE_STRAPI_URL`
-- ✅ Removed hardcoded `localhost:8055` from production code
+- ✅ All code now uses `import.meta.env.VITE_SUPABASE_URL` and `import.meta.env.VITE_SUPABASE_ANON_KEY`
+- ✅ Removed hardcoded API endpoints from production code
 - ✅ Created `.env.example` file for reference
-- ✅ Updated `src/config.ts` to require environment variable in production
+- ✅ Updated `src/config.ts` to use environment variables
 - ✅ Updated `src/utils/constants.ts` to use environment variables
 
 ### 5. Git Repository
@@ -43,8 +43,8 @@
 - ✅ Removed unused imports (`AnimatePresence`, `X`, `Zap`)
 - ✅ Fixed duplicate `whileHover` props in Header.tsx and Home.tsx
 - ✅ Fixed Button component `animate` prop issues (wrapped in motion.div)
-- ✅ Fixed cart API import names (`addCartItemToDirectus`, `getCartItemsFromDirectus`)
-- ✅ Fixed type issues in mock data (DirectusFile types)
+- ✅ Fixed cart API import names to use Supabase methods
+- ✅ Fixed type issues in mock data (updated to match Supabase types)
 
 ### 8. Code Quality
 - ✅ Verified no Node.js APIs (fs, path, require) in frontend code
@@ -56,8 +56,12 @@
 You **must** configure these environment variables in Vercel's project settings:
 
 ### Required:
-- **`VITE_STRAPI_URL`**: Your production Strapi instance URL
-  - Example: `https://your-strapi-instance.com`
+- **`VITE_SUPABASE_URL`**: Your Supabase project URL
+  - Example: `https://your-project.supabase.co`
+  - **This is required** - the app will fail in production without it
+
+- **`VITE_SUPABASE_ANON_KEY`**: Your Supabase anonymous/public key
+  - Found in your Supabase project settings under API
   - **This is required** - the app will fail in production without it
 
 ### Optional:
@@ -83,7 +87,8 @@ You **must** configure these environment variables in Vercel's project settings:
 
 3. **Configure Environment Variables**:
     - In Vercel project settings → Environment Variables
-    - Add `VITE_STRAPI_URL` with your production Strapi URL
+    - Add `VITE_SUPABASE_URL` with your Supabase project URL
+    - Add `VITE_SUPABASE_ANON_KEY` with your Supabase anonymous key
     - Optionally add `VITE_SITE_URL`
 
 4. **Deploy**:
@@ -93,12 +98,12 @@ You **must** configure these environment variables in Vercel's project settings:
 ## ⚠️ Important Notes
 
 ### CORS Configuration
-- Your Strapi instance must allow requests from your Vercel domain
-- Update Strapi CORS settings to include your Vercel URL
+- Supabase allows requests from your Vercel domain by default
+- No additional CORS configuration needed for Supabase
 
-### Proxy Configuration
-- The Vite dev server proxy is **only for development**
-- In production, the app makes direct API calls to `VITE_STRAPI_URL`
+### API Configuration
+- The app uses Supabase for all API operations
+- Supabase handles authentication, database, and real-time features
 - No proxy is needed in production
 
 ### Build Warnings
@@ -119,7 +124,7 @@ You **must** configure these environment variables in Vercel's project settings:
    npm run preview
    ```
 
-2. **Set up Strapi CORS** for your production domain
+2. **Set up Supabase project** with required tables and policies
 
 3. **Test API connectivity** from production environment
 
@@ -130,18 +135,18 @@ You **must** configure these environment variables in Vercel's project settings:
 
 ## 📝 Files Modified
 
-- `package.json` - Verified scripts
-- `vite.config.ts` - Updated proxy to use env vars, added build config
+- `package.json` - Verified scripts, removed Directus dependencies
+- `vite.config.ts` - Simplified configuration, removed Directus proxy
 - `.gitignore` - Added .env files
 - `src/config.ts` - Production-safe environment variable handling
 - `src/utils/constants.ts` - Production-safe environment variable handling
 - `vercel.json` - Created Vercel configuration
-- `.env.example` - Created example environment file
+- `.env.example` - Updated with Supabase environment variables
 - `README.md` - Updated with Vercel deployment instructions
 - `src/components/layout/Header.tsx` - Fixed TypeScript errors
 - `src/pages/Home.tsx` - Fixed TypeScript errors
-- `src/stores/cartStore.ts` - Fixed import names
-- `src/utils/api.ts` - Fixed type issues
+- `src/stores/cartStore.ts` - Updated to use Supabase methods
+- `src/utils/api.ts` - Updated to use Supabase types and methods
 
 ## ✨ Project is Ready for Deployment!
 

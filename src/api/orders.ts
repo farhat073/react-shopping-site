@@ -1,64 +1,26 @@
-import { strapi } from './strapiClient';
-import type { Order } from '../types';
+import { createOrder as createOrderService, getUserOrders, getOrderById, updateOrderStatus, cancelOrder, fetchAllOrders as fetchAllOrdersService } from '../services/orderService.js';
+import type { Order, CreateOrderData } from '../types/order.js';
 
-interface OrderItemInput {
-  product: string;
-  quantity: number;
-  price: number;
-}
-
-export const createOrder = async (userId: string, totalPrice: number, items: OrderItemInput[]): Promise<string> => {
-  const response = await strapi.post('/orders', {
-    data: {
-      user: userId,
-      total_price: totalPrice,
-      status: 'pending',
-      items: items.map(item => ({
-        product: item.product,
-        quantity: item.quantity,
-        price: item.price,
-      })),
-    },
-  });
-
-  return response.data.id.toString();
+export const createOrder = async (orderData: CreateOrderData): Promise<Order> => {
+  return await createOrderService(orderData);
 };
 
-export const fetchOrdersByUser = async (userId: string): Promise<Order[]> => {
-  const response = await strapi.get('/orders', {
-    'filters[user][id][$eq]': userId,
-    populate: '*',
-    sort: 'createdAt:desc',
-  });
+export const getOrders = async (userId: string): Promise<Order[]> => {
+  return await getUserOrders(userId);
+};
 
-  return response.data?.map((item: any) => ({
-    id: item.id.toString(),
-    user: item.attributes.user?.data?.id?.toString() || userId,
-    total_price: item.attributes.total_price,
-    status: item.attributes.status,
-    created_at: item.attributes.createdAt,
-  })) || [];
+export const getOrder = async (orderId: string, userId: string): Promise<Order> => {
+  return await getOrderById(orderId, userId);
 };
 
 export const fetchAllOrders = async (): Promise<Order[]> => {
-  const response = await strapi.get('/orders', {
-    populate: 'user',
-    sort: 'createdAt:desc',
-  });
-
-  return response.data?.map((item: any) => ({
-    id: item.id.toString(),
-    user: item.attributes.user?.data?.id?.toString() || '',
-    total_price: item.attributes.total_price,
-    status: item.attributes.status,
-    created_at: item.attributes.createdAt,
-  })) || [];
+  return await fetchAllOrdersService();
 };
 
-export const updateOrderStatus = async (orderId: string, status: string): Promise<void> => {
-  await strapi.put(`/orders/${orderId}`, {
-    data: {
-      status,
-    },
-  });
+export const updateOrder = async (orderId: string, status: string): Promise<Order> => {
+  return await updateOrderStatus(orderId, status);
+};
+
+export const cancelUserOrder = async (orderId: string, userId: string): Promise<Order> => {
+  return await cancelOrder(orderId, userId);
 };

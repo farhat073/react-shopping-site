@@ -11,8 +11,9 @@ import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
 import { Separator } from '../components/ui/separator';
-import { fetchProductBySlug, fetchRelatedProducts } from '../api/products';
-import { getAssetUrl } from '../utils/helpers';
+import { RadioGroup, RadioGroupItem } from '../components/ui/radio-group';
+import { Label } from '../components/ui/label';
+import { getProductBySlug } from '../api/products';
 import { useNavigate } from 'react-router-dom';
 import type { Product } from '../types';
 
@@ -25,6 +26,7 @@ const ProductDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [selectedVariants, setSelectedVariants] = useState<Record<string, string>>({});
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -33,14 +35,10 @@ const ProductDetail = () => {
       setLoading(true);
       setError(null);
       try {
-        const fetchedProduct = await fetchProductBySlug(slug);
+        const fetchedProduct = await getProductBySlug(slug);
         if (fetchedProduct) {
           setProduct(fetchedProduct);
-          // Fetch related products
-          if (fetchedProduct.category?.id) {
-            const related = await fetchRelatedProducts(fetchedProduct.category.id, fetchedProduct.id);
-            setRelatedProducts(related);
-          }
+          // TODO: Fetch related products
         } else {
           setError('Product not found');
         }
@@ -101,9 +99,24 @@ const ProductDetail = () => {
   }
 
   const images = product.images && product.images.length > 0
-    ? product.images.map(img => getAssetUrl(img.id))
+    ? product.images.map(img => img.url)
     : ['/placeholder.jpg'];
   const currentImage = images[selectedImageIndex] || images[0];
+
+  // Group variants by name
+  const variantGroups = product.variants?.reduce((acc, variant) => {
+    if (!acc[variant.name]) {
+      acc[variant.name] = [];
+    }
+    acc[variant.name].push(variant);
+    return acc;
+  }, {} as Record<string, typeof product.variants>) || {};
+
+  // Calculate current price with variant modifiers
+  const currentPrice = product.price + Object.entries(selectedVariants).reduce((total, [name, value]) => {
+    const variant = product.variants?.find(v => v.name === name && v.value === value);
+    return total + (variant?.price_modifier || 0);
+  }, 0);
 
   return (
     <>
@@ -246,9 +259,58 @@ const ProductDetail = () => {
 
               <div className="flex items-baseline space-x-2">
                 <span className="text-5xl font-bold text-gray-900">
-                  {formatPrice(product.price, product.currency)}
+                  {formatPrice(currentPrice, product.currency)}
                 </span>
+                {currentPrice !== product.price && (
+                  <span className="text-2xl text-gray-500 line-through">
+                    {formatPrice(product.price, product.currency)}
+                  </span>
+                )}
               </div>
+
+              {/* Variant Selection */}
+              {Object.keys(variantGroups).length > 0 && (
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-gray-900">Options</h3>
+                  {Object.entries(variantGroups).map(([name, variants]) => (
+                    <div key={name} className="space-y-2">
+                      <Label className="text-sm font-medium text-gray-700">{name}</Label>
+                      <RadioGroup
+                        value={selectedVariants[name] || ''}
+                        onValueChange={(value) => setSelectedVariants(prev => ({ ...prev, [name]: value }))}
+                        className="flex flex-wrap gap-2"
+                      >
+                        {variants.map((variant) => (
+                          <div key={variant.id} className="flex items-center space-x-2">
+                            <RadioGroupItem
+                              value={variant.value}
+                              id={`${name}-${variant.value}`}
+                              disabled={variant.stock <= 0}
+                            />
+                            <Label
+                              htmlFor={`${name}-${variant.value}`}
+                              className={`text-sm px-3 py-1 rounded-md border cursor-pointer ${
+                                variant.stock <= 0
+                                  ? 'text-gray-400 border-gray-200 cursor-not-allowed'
+                                  : selectedVariants[name] === variant.value
+                                  ? 'bg-gray-900 text-white border-gray-900'
+                                  : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'
+                              }`}
+                            >
+                              {variant.value}
+                              {variant.price_modifier !== 0 && (
+                                <span className="ml-1 text-xs">
+                                  ({variant.price_modifier > 0 ? '+' : ''}{formatPrice(variant.price_modifier, product.currency)})
+                                </span>
+                              )}
+                            </Label>
+                          </div>
+                        ))}
+                      </RadioGroup>
+                    </div>
+                  ))}
+                </div>
+              )}
 
               <Separator />
 

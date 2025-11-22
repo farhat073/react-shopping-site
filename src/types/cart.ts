@@ -1,10 +1,20 @@
 import type { Product } from './product';
 
+export interface ProductVariant {
+  id: string;
+  name: string;
+  value: string;
+  price_modifier: number;
+  stock: number;
+  sku?: string;
+}
+
 export interface CartItem {
   id: string;
-  user?: string; // Strapi user ID (optional for local cart) - placeholder
+  user?: string; // User ID (optional for guest cart)
   product: Product;
   quantity: number;
+  variant?: ProductVariant | null;
 }
 
 export interface CartState {

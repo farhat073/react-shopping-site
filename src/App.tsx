@@ -17,8 +17,13 @@ import { useServiceWorker } from './hooks/useServiceWorker';
 const PaymentSuccess = lazy(() => import('./pages/PaymentSuccess'));
 const OrderHistory = lazy(() => import('./pages/OrderHistory'));
 const AdminOrders = lazy(() => import('./pages/AdminOrders'));
+const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
+const ProductManagement = lazy(() => import('./pages/ProductManagement'));
+const CategoryManagement = lazy(() => import('./pages/CategoryManagement'));
+const UserManagement = lazy(() => import('./pages/UserManagement'));
 
 const ProductDetail = lazy(() => import('./pages/ProductDetail'));
+const Shop = lazy(() => import('./pages/Shop'));
 const Checkout = lazy(() => import('./pages/Checkout.tsx'));
 
 function App() {
@@ -40,6 +45,11 @@ function App() {
                 <Route path="product/:slug" element={
                   <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
                     <ProductDetail />
+                  </Suspense>
+                } />
+                <Route path="shop" element={
+                  <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+                    <Shop />
                   </Suspense>
                 } />
                 <Route path="cart" element={
@@ -67,9 +77,37 @@ function App() {
                   </ProtectedRoute>
                 } />
                 <Route path="admin/orders" element={
-                  <ProtectedRoute>
+                  <ProtectedRoute requireAdmin>
                     <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
                       <AdminOrders />
+                    </Suspense>
+                  </ProtectedRoute>
+                } />
+                <Route path="admin" element={
+                  <ProtectedRoute requireAdmin>
+                    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+                      <AdminDashboard />
+                    </Suspense>
+                  </ProtectedRoute>
+                } />
+                <Route path="admin/products" element={
+                  <ProtectedRoute requireAdmin>
+                    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+                      <ProductManagement />
+                    </Suspense>
+                  </ProtectedRoute>
+                } />
+                <Route path="admin/categories" element={
+                  <ProtectedRoute requireAdmin>
+                    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+                      <CategoryManagement />
+                    </Suspense>
+                  </ProtectedRoute>
+                } />
+                <Route path="admin/users" element={
+                  <ProtectedRoute requireAdmin>
+                    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+                      <UserManagement />
                     </Suspense>
                   </ProtectedRoute>
                 } />

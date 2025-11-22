@@ -1,26 +1,17 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
-import toast from 'react-hot-toast';
-import { login, signup, logout, getCurrentUser } from '../api/auth';
-import type { User, LoginCredentials, SignupCredentials } from '../types';
+import type { Session } from '@supabase/supabase-js';
+import supabase from '../lib/supabase';
+import type { User, AuthState, LoginCredentials, SignupCredentials } from '../types/auth';
 
-interface AuthContextType {
-  user: User | null;
+interface AuthContextType extends AuthState {
   login: (credentials: LoginCredentials) => Promise<void>;
   signup: (credentials: SignupCredentials) => Promise<void>;
   logout: () => Promise<void>;
-  loading: boolean;
+  updateProfile: (updates: Partial<Pick<User, 'first_name' | 'last_name'>>) => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-};
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -28,90 +19,110 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const restoreSession = async () => {
-      const token = localStorage.getItem('strapi_jwt');
-      if (token) {
-        try {
-          // Import the strapi client and set token
-          const { strapi } = await import('../api/strapiClient');
-          strapi.setToken(token);
-          const currentUser = await getCurrentUser();
-          setUser(currentUser);
-        } catch (error) {
-          console.error('Error restoring session:', error);
-          // Clear token on failure
-          localStorage.removeItem('strapi_jwt');
-          setUser(null);
-        }
+    // Get initial session
+    const getInitialSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        await fetchUserProfile(session.user.id);
+      } else {
+        setIsLoading(false);
       }
-      setLoading(false);
     };
 
-    restoreSession();
+    getInitialSession();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (_event: string, session: Session | null) => {
+        if (session?.user) {
+          await fetchUserProfile(session.user.id);
+        } else {
+          setUser(null);
+          setIsLoading(false);
+        }
+      }
+    );
+
+    return () => subscription.unsubscribe();
   }, []);
 
-  const handleLogin = async (credentials: LoginCredentials) => {
-    setLoading(true);
+  const fetchUserProfile = async (userId: string) => {
     try {
-      const { user: loggedInUser, jwt } = await login(credentials);
-      localStorage.setItem('strapi_jwt', jwt);
-      setUser(loggedInUser);
-      toast.success('Successfully logged in!');
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', userId)
+        .single();
+
+      if (error) throw error;
+
+      setUser(data);
     } catch (error) {
-      toast.error('Login failed. Please check your credentials.');
-      throw error;
+      console.error('Error fetching user profile:', error);
+      setUser(null);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
-  const handleSignup = async (credentials: SignupCredentials) => {
-    setLoading(true);
-    try {
-      const { user: newUser, jwt } = await signup(credentials);
-      localStorage.setItem('strapi_jwt', jwt);
-      setUser(newUser);
-      toast.success('Account created successfully!');
-    } catch (error) {
-      toast.error('Signup failed. Please try again.');
-      throw error;
-    } finally {
-      setLoading(false);
-    }
+  const login = async (credentials: LoginCredentials) => {
+    const { error } = await supabase.auth.signInWithPassword({
+      email: credentials.email,
+      password: credentials.password,
+    });
+
+    if (error) throw error;
   };
 
-  const handleLogout = async () => {
-    setLoading(true);
-    try {
-      await logout();
-      localStorage.removeItem('strapi_jwt');
-      setUser(null);
-      toast.success('Successfully logged out!');
-    } catch (error) {
-      console.error('Logout error:', error);
-      // Clear token even on error
-      localStorage.removeItem('strapi_jwt');
-      setUser(null);
-      toast.error('Logout failed.');
-    } finally {
-      setLoading(false);
-    }
+  const signup = async (credentials: SignupCredentials) => {
+    const { error } = await supabase.auth.signUp({
+      email: credentials.email,
+      password: credentials.password,
+      options: {
+        data: {
+          first_name: credentials.first_name,
+          last_name: credentials.last_name,
+        },
+      },
+    });
+
+    if (error) throw error;
+  };
+
+  const logout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) throw error;
+  };
+
+  const updateProfile = async (updates: Partial<Pick<User, 'first_name' | 'last_name'>>) => {
+    if (!user) throw new Error('No user logged in');
+
+    const { data, error } = await supabase
+      .from('users')
+      .update(updates)
+      .eq('id', user.id)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    setUser(data);
   };
 
   const value: AuthContextType = {
     user,
-    login: handleLogin,
-    signup: handleSignup,
-    logout: handleLogout,
-    loading,
+    isAuthenticated: !!user,
+    isLoading,
+    login,
+    signup,
+    logout,
+    updateProfile,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
+
+// useAuth is now in src/hooks/useAuth.ts

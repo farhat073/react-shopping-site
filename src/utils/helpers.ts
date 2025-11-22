@@ -26,3 +26,17 @@ export const debounce = <T extends (...args: unknown[]) => unknown>(
     timeout = setTimeout(() => func(...args), wait);
   };
 };
+
+export const getAssetUrl = (path: string): string => {
+  // Supabase storage uses public bucket URLs
+  // For now, return a placeholder - this should be updated based on your Supabase storage setup
+  return path.startsWith('http') ? path : `/images/${path}`;
+};
+
+export const setRelatedProducts = (productId: string): Promise<Product[]> => {
+  // Placeholder: fetch related products based on productId
+  // This should be implemented to fetch from API
+  return Promise.resolve([]);
+};
+
+export { getCartItemCount, getCartTotal } from '../services/cartService.ts';

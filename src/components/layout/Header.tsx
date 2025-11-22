@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { motion, useScroll, useMotionValueEvent } from 'framer-motion';
 import { Menu, ShoppingCart, User, LogOut, Package } from 'lucide-react';
 import { useCart } from '../../hooks/useCart';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../hooks/useAuth';
 import { SITE_CONFIG } from '../../utils/constants';
 import { Button } from '../ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet';

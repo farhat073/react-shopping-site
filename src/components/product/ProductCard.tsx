@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ShoppingCart, Zap } from 'lucide-react';
 import { useCart } from '../../hooks/useCart';
-import { formatPrice, getAssetUrl } from '../../utils/helpers';
+import { formatPrice } from '../../utils/helpers';
 import { LazyImage } from '../common/LazyImage';
 import { Button } from '../ui/button';
 import { Card, CardContent } from '../ui/card';
@@ -26,9 +26,8 @@ export const ProductCard = ({ product }: ProductCardProps) => {
     await buyNow(product);
   };
 
-  const imageUrl = product.images && product.images.length > 0
-    ? getAssetUrl(product.images[0].id)
-    : '/placeholder.jpg';
+  const primaryImage = product.images?.find(img => img.is_primary) || product.images?.[0];
+  const imageUrl = primaryImage?.url || '/placeholder.jpg';
 
   return (
     <motion.div
@@ -69,6 +68,13 @@ export const ProductCard = ({ product }: ProductCardProps) => {
               <div className="absolute top-3 right-3">
                 <Badge variant="secondary" className="text-xs">
                   {product.category.name}
+                </Badge>
+              </div>
+            )}
+            {product.variants && product.variants.length > 0 && (
+              <div className="absolute bottom-3 left-3">
+                <Badge variant="outline" className="text-xs bg-white/90">
+                  {product.variants.length} option{product.variants.length > 1 ? 's' : ''}
                 </Badge>
               </div>
             )}

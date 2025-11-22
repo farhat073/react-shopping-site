@@ -3,7 +3,7 @@ import { motion, useScroll, useTransform, AnimatePresence, useMotionValue, useSp
 import { Helmet } from 'react-helmet-async';
 import { Link, useNavigate } from 'react-router-dom';
 import { Search, X, ArrowRight, Sparkles, ShoppingCart, Star, TrendingUp, Menu, User, LogOut, Package } from 'lucide-react';
-import { fetchProducts } from '../api/products';
+import { getProducts } from '../api/products';
 import { useProductFilters } from '../hooks/useProductFilters';
 import { ProductGrid } from '../components/product/ProductGrid';
 import { Card, CardContent } from '../components/ui/card';
@@ -12,7 +12,7 @@ import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { getAssetUrl, formatPrice } from '../utils/helpers';
 import { useCart } from '../hooks/useCart';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import { SITE_CONFIG } from '../utils/constants';
 import { Sheet, SheetContent, SheetTrigger } from '../components/ui/sheet';
 import {
@@ -294,7 +294,7 @@ export const Home = () => {
       setLoading(true);
       setError(null);
       try {
-        const fetchedProducts = await fetchProducts(filters);
+        const fetchedProducts = await getProducts();
         setProducts(fetchedProducts);
         
         // Get featured products (first 8)
